@@ -1,0 +1,16 @@
+/* src/styles/tokens.css */
+:root {
+  /* Paleta primária */
+  --brand-wine: 335 77% 17%;   /* #4e0a26 */
+  --brand-cream: 40 60% 99%;   /* #fefdfb */
+
+  /* Semânticas (use estas no app) */
+  --bg: 40 60% 99%;            /* fundo padrão = creme */
+  --fg: 240 6% 6%;             /* texto principal */
+  --muted: 240 5% 40%;         /* texto secundário */
+  --card: 0 0% 100%;           /* cartões/superfícies */
+  --border: 240 6% 90%;        /* linhas/bordas */
+  --accent: 335 77% 17%;       /* botões/destaques = vinho */
+  --ring: 335 77% 25%;         /* foco/acessibilidade */
+  --shadow: 240 10% 3%;
+}
