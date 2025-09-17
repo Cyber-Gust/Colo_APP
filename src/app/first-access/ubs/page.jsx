@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function FirstAccessUbs() {
   const router = useRouter()
@@ -21,7 +21,7 @@ export default function FirstAccessUbs() {
     e.preventDefault()
     setErr(null); setLoading(true)
     try {
-      const { data, error } = await supabaseBrowser.rpc('provisionar_ubs', {
+      const { data, error } = await supabase.rpc('provisionar_ubs', {
         p_nome: form.nome,
         p_municipio: form.municipio,
         p_cnes: form.cnes || null,

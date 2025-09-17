@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+
+// Se seu client exporta "supabaseBrowser", troque a linha abaixo:
+// import { supabaseBrowser as supabase } from '@/lib/supabaseClient'
 import { supabase } from '@/lib/supabaseClient'
+
 import LoginCard from '@/components/ui/LoginCard'
 
 export default function UbsLoginPage() {
@@ -19,48 +23,17 @@ export default function UbsLoginPage() {
   const [errorMsg, setErrorMsg] = useState('')
   const [show, setShow] = useState(false)
 
-  // Decide o destino com base no profile
-  async function routeByProfile(userId, prefer = null) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, ubs_id, onboarding_done, ativo')
-      .eq('id', userId)
-      .single()
-
-    const isUbsRole = ['UBS_ADMIN', 'UBS_STAFF', 'ACS'].includes(profile?.role)
-
-    if (!profile?.ativo) {
-      setErrorMsg('Seu perfil está inativo. Fale com o administrador.')
-      return
-    }
-
-    // Admin sem UBS provisionada → wizard de primeiro acesso
-    if (profile?.role === 'UBS_ADMIN' && !profile?.ubs_id && !profile?.onboarding_done) {
-      router.replace('/first-access/ubs')
-      return
-    }
-
-    // Perfis UBS com UBS vinculada → painel
-    if (isUbsRole && profile?.ubs_id) {
-      router.replace(prefer || redirectTo)
-      return
-    }
-
-    // Outros perfis (ex.: GESTANTE) → fluxo próprio
-    router.replace('/first-access')
-  }
-
-  // Se já houver sessão, pula o login e decide rota
+  // Se já houver sessão no client, tenta ir pro painel;
+  // com o bridge abaixo, o middleware já deve aceitar.
   useEffect(() => {
     let on = true
     ;(async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!on || !session) return
-      await routeByProfile(session.user.id, redirectTo)
+      router.replace(redirectTo)
     })()
     return () => { on = false }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [redirectTo])
+  }, [router, redirectTo])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -73,21 +46,35 @@ export default function UbsLoginPage() {
         return
       }
 
-      // must_reset opcional via user_metadata
+      const session = data?.session
+      if (!session?.access_token || !session?.refresh_token) {
+        setErrorMsg('Sessão inválida. Tente novamente.')
+        return
+      }
+
+      // 🔑 PASSO CRÍTICO: grava sessão no servidor (cookies httpOnly)
+      const resp = await fetch('/api/auth/set', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        }),
+      })
+      if (!resp.ok) {
+        setErrorMsg('Não consegui estabelecer a sessão no servidor.')
+        return
+      }
+
+      // (opcional) must_reset / MFA
       const mustReset = data.user?.user_metadata?.must_reset === true
-      if (mustReset) {
-        router.replace('/first-access')
-        return
-      }
+      if (mustReset) { router.replace('/first-access'); return }
+      if (session?.mfa?.factor_type === 'totp') { router.replace('/mfa'); return }
 
-      // (opcional) MFA TOTP
-      if (data?.session?.mfa?.factor_type === 'totp') {
-        router.replace('/mfa')
-        return
-      }
-
-      // Decide rota conforme profile/UBS
-      await routeByProfile(data.user.id, redirectTo)
+      // Agora o middleware/layout conseguem ver a sessão e decidir:
+      // - se Admin sem UBS → /first-access/ubs
+      // - senão → /ubs/dashboard (ou o redirectTo original)
+      router.replace(redirectTo)
     } catch (err) {
       setErrorMsg(err?.message || 'Erro inesperado no login.')
     } finally {
@@ -98,11 +85,6 @@ export default function UbsLoginPage() {
   return (
     <div className="min-h-screen grid place-items-center bg-[#fefdfb] p-4">
       <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center gap-2">
-          <Image src="/brand/logo.png" width={72} height={72} alt="Colo" />
-          <h1 className="text-xl font-semibold">Acesso UBS</h1>
-        </div>
-
         <LoginCard>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

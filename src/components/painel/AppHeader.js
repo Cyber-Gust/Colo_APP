@@ -6,11 +6,11 @@ import Badge from "@/components/ui/Badge";
 
 export default function AppHeader({ user, onToggleSidebar, collapsed }) {
     return (
-        <header className="sticky top-0 z-40 w-full border-b border-zinc-200/70 bg-white/80 backdrop-blur">
-            <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
+        <header className="sticky top-0 z-40 w-full border-b border-zinc-200/70 bg-[#d8c8c8] backdrop-blur">
+            <div className=" px-4 py-3 flex items-center gap-3">
                 <button
                     onClick={onToggleSidebar}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 hover:bg-zinc-50 active:scale-[0.98] transition"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl hover:bg-[#642b43] active:scale-[0.98] transition"
                     aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
                 >
                     <Menu className="h-5 w-5" />
@@ -19,8 +19,7 @@ export default function AppHeader({ user, onToggleSidebar, collapsed }) {
                 <div className="flex items-center gap-3">
                     <LogoMark />
                     <div className="leading-tight">
-                        <div className="font-semibold tracking-tight">Painel UBS — Colo</div>
-                        <div className="text-xs text-zinc-500">Gestão de pré-natal e vigilância materna</div>
+                        <div className="font-semibold text-lg tracking-tight"> Painel UBS</div>
                     </div>
                 </div>
 
@@ -28,11 +27,7 @@ export default function AppHeader({ user, onToggleSidebar, collapsed }) {
                     {user?.ubs && (
                         <Badge tone="neutral" className="hidden sm:inline-flex">{user.ubs}</Badge>
                     )}
-                    {user?.role && (
-                        <Badge tone="wine" variant="soft" title="Perfil de acesso">
-                            {user.role}
-                        </Badge>
-                    )}
+                    
                     <div className="flex items-center gap-3">
                         <div className="text-right leading-tight hidden sm:block">
                             <div className="text-sm font-medium">{user?.name ?? "Usuário"}</div>

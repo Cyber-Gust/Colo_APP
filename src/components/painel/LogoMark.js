@@ -7,9 +7,9 @@ export default function LogoMark() {
             <Image
                 src="/brand/logo.png"
                 alt="Colo logo"
-                width={72}
+                width={90}
                 height={36}
-                className="rounded-xl border border-zinc-200 bg-white object-contain"
+                className=""
                 priority
             />
         </div>

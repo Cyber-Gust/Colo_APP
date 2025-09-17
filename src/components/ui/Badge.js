@@ -18,4 +18,4 @@ export default function Badge({ children, className = "", tone = "neutral", vari
             {children}
         </span>
     );
-}ß
+}

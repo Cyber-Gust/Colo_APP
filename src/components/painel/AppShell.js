@@ -26,8 +26,8 @@ export default function AppShell({ children }) {
     // Dica: use `useEffect` + `createClientComponentClient` ou um contexto que você já tenha
     const user = useMemo(
         () => ({
-            name: "Enf. Juliana Souza",
-            email: "juliana.souza@ubs.gov.br",
+            name: "Enf. Maria Eduarda",
+            email: "duda@gmail.com",
             role: "UBS_ADMIN",
             ubs: "UBS São João del-Rei",
         }),
@@ -35,7 +35,7 @@ export default function AppShell({ children }) {
     );
 
     return (
-        <div className="min-h-dvh bg-[#fefdfb] text-zinc-900 flex flex-col">
+        <div className="h-dvh overflow-hidden bg-[#ffffff] text-zinc-900 flex flex-col">
             {/* Header fixo no topo */}
             <AppHeader user={user} onToggleSidebar={toggleSidebar} collapsed={collapsed} />
 
