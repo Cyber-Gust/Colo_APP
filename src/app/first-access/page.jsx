@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import LoginCard from '@/components/ui/LoginCard'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 
 function strong(p) {
   return p.length >= 8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /\d/.test(p)
@@ -21,10 +21,10 @@ export default function FirstAccess() {
     if (p1 !== p2) return setErr('As senhas não coincidem.')
     if (!strong(p1)) return setErr('Use 8+ caracteres, maiúscula, minúscula e número.')
 
-    const { data: { user } } = await supabaseBrowser.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
     if (!user) return setErr('Sessão expirada.')
 
-    const { error } = await supabaseBrowser.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({
       password: p1,
       data: { ...user.user_metadata, must_reset: false },
     })

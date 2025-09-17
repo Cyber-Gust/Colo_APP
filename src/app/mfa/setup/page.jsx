@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 import LoginCard from '@/components/ui/LoginCard'
 
 export default function MfaSetup() {
@@ -10,7 +10,7 @@ export default function MfaSetup() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabaseBrowser.auth.mfa.enroll({ factorType: 'totp' })
+      const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' })
       if (error) setMsg('Falha ao iniciar TOTP')
       else setUri(data?.totp?.uri || null)
     })()
@@ -18,7 +18,7 @@ export default function MfaSetup() {
 
   async function verify(e) {
     e.preventDefault()
-    const { error } = await supabaseBrowser.auth.mfa.verify({ factorType: 'totp', code })
+    const { error } = await supabase.auth.mfa.verify({ factorType: 'totp', code })
     setMsg(error ? 'Código inválido' : 'TOTP ativado!')
   }
 

@@ -3,7 +3,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import LoginCard from '@/components/ui/LoginCard'
 import { isValidCPF, isValidCNS, cpfAliasEmail, onlyDigits } from '@/lib/br-validators'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function GestanteLoginPage() {
   const router = useRouter()
@@ -24,7 +24,7 @@ export default function GestanteLoginPage() {
     const email = cpfAliasEmail(cpf)
 
     startTransition(async () => {
-      const { data, error } = await supabaseBrowser.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password: onlyDigits(sus),
       })

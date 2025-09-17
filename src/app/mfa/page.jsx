@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 import LoginCard from '@/components/ui/LoginCard'
 
 export default function MfaVerify() {
@@ -11,7 +11,7 @@ export default function MfaVerify() {
 
   async function submit(e) {
     e.preventDefault()
-    const { error } = await supabaseBrowser.auth.mfa.verify({ factorType: 'totp', code })
+    const { error } = await supabase.auth.mfa.verify({ factorType: 'totp', code })
     if (error) setMsg('Código inválido')
     else router.replace('/admin')
   }

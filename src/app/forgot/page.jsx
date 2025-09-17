@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import LoginCard from '@/components/ui/LoginCard'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function ForgotPage() {
   const [email, setEmail] = useState('')
@@ -10,7 +10,7 @@ export default function ForgotPage() {
   async function submit(e) {
     e.preventDefault()
     setMsg(null)
-    const { error } = await supabaseBrowser.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${location.origin}/first-access`,
     })
     setMsg(error ? 'Não foi possível enviar o e-mail.' : 'Se existir uma conta, enviaremos instruções.')
